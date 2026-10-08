@@ -151,7 +151,19 @@ class HiveParser(parser.Parser):
     ALTER_PARSERS = {
         **parser.Parser.ALTER_PARSERS,
         "CHANGE": lambda self: self._parse_alter_table_change(),
+        "REPLACE": lambda self: self._parse_alter_table_replace_columns(),
     }
+
+    def _parse_alter_table_replace_columns(self) -> exp.ReplaceColumns | None:
+        if not self._match_text_seq("COLUMNS"):
+            return None
+
+        expressions = (
+            self._parse_wrapped_csv(self._parse_field_def)
+            if self._match(TokenType.L_PAREN, advance=False)
+            else self._parse_csv(self._parse_field_def)
+        )
+        return self.expression(exp.ReplaceColumns(expressions=expressions))
 
     def build_cast(self, strict: bool, **kwargs) -> exp.Expr:
         if self._prev.text.upper() == "BD":

@@ -212,6 +212,9 @@ class TestHive(Validator):
 
         self.validate_identity("ALTER TABLE X ADD COLUMNS (y INT, z STRING)")
         self.validate_identity("ALTER TABLE X ADD COLUMNS (y INT, z STRING) CASCADE")
+        self.validate_identity(
+            "ALTER TABLE X REPLACE COLUMNS (y INT COMMENT 'c', z STRING) CASCADE"
+        )
 
         self.validate_identity(
             """CREATE EXTERNAL TABLE x (y INT) ROW FORMAT SERDE 'serde' ROW FORMAT DELIMITED FIELDS TERMINATED BY '1' WITH SERDEPROPERTIES ('input.regex'='')""",
